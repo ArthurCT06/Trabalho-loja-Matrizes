@@ -1,0 +1,177 @@
+
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+using System.Runtime.InteropServices;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ConsoleApp11
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            int contagem = 0;
+            int contagemVenda = 0;
+            string[,] cadastroProd = new string[100, 4];
+            string[,] vendas = new string[100, 3];
+            int escolha;
+            do
+            {
+                Console.WriteLine("Menu: ");
+                Console.WriteLine("========================================");
+                Console.WriteLine("1. Cadastrar Produto");
+                Console.WriteLine("2. Realizar uma venda");
+                Console.WriteLine("3. Relatório de vendas");
+                Console.WriteLine("4. Relatório de venda de funcionarios");
+                Console.WriteLine("0. Sair");
+                Console.WriteLine("========================================");
+                escolha = Convert.ToInt32(Console.ReadLine());
+
+                switch (escolha)
+                {
+                    case 0:
+                        Console.WriteLine("Programa encerrado");
+                        break;
+
+                    case 1:
+                        Console.WriteLine("Cadastrando produto ");
+                        Console.WriteLine("CodProd: ");
+                        string prodVerificacao = Console.ReadLine();
+
+                        bool produtoDuplicado = false;
+                        for (int i = 0; i < contagem; i++)
+                        {
+                            if (cadastroProd[i, 0] == prodVerificacao)
+                            {
+                                produtoDuplicado = true;
+                                break;
+                            }
+                        }
+
+                        if (produtoDuplicado)
+                        {
+                            Console.WriteLine("Esse código já está cadastrado para outro produto!");
+                        }
+                        else
+                        {
+                            Console.WriteLine("CodProd: ");
+                            cadastroProd[contagem, 0] = Console.ReadLine();
+                            Console.WriteLine("Descricao: ");
+                            cadastroProd[contagem, 1] = Console.ReadLine();
+                            Console.WriteLine("Valor: ");
+                            cadastroProd[contagem, 2] = Console.ReadLine();
+                            Console.WriteLine("Qtd: ");
+                            cadastroProd[contagem, 3] = Console.ReadLine();
+                        }
+                        contagem++;
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+
+                    case 2:
+                        Console.WriteLine("Realizar de vendas ");
+                        Console.WriteLine("CodProd: ");
+                        string codProdVendas = Console.ReadLine();
+                        Console.WriteLine("CodFunc: ");
+                        string codFuncVendas = Console.ReadLine();
+                        Console.WriteLine("Qtd: ");
+                        int qtdVendas = Convert.ToInt32(Console.ReadLine());
+
+                        for (int linha = 0; linha < contagem; linha++)
+                        {
+                            if (cadastroProd[linha, 0] == codProdVendas)
+                            {
+                                int qtdProdutos = Convert.ToInt32(cadastroProd[linha, 3]);
+                                if (qtdProdutos >= qtdVendas)
+                                {
+                                    cadastroProd[linha, 3] = (qtdProdutos - qtdVendas).ToString();
+                                    vendas[contagemVenda, 0] = codProdVendas;
+                                    vendas[contagemVenda, 1] = codFuncVendas;
+                                    vendas[contagemVenda, 2] = qtdVendas.ToString();
+                                    contagemVenda++;
+                                    Console.WriteLine("Venda realizada com sucesso!");
+
+                                }
+                                else
+                                {
+                                    Console.WriteLine("Produto não encontrado!");
+                                }
+                            }
+                        }
+
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+
+                    case 3:
+
+                        Console.WriteLine("Relatorio de vendas: ");
+                        int totalVendido = 0;
+                        for (int linha = 0; linha < contagemVenda; linha++)
+                        {
+                            string codProduto = vendas[linha, 0];
+                            int somaVendas = 0;
+
+                            for (int colunas = 0; colunas < contagem; colunas++)
+                            {
+                                if (cadastroProd[colunas, 0] == codProduto)
+                                {
+                                    somaVendas = Convert.ToInt32(cadastroProd[linha, 2]) * Convert.ToInt32(vendas[linha, 2]);
+
+                                }
+
+                            }
+                            totalVendido += somaVendas;
+                            Console.WriteLine("codProdVendas: " + vendas[linha, 0] + ", codFuncVendas: " + vendas[linha, 1] + ", valorVenda: " + somaVendas);
+
+                        }
+                        Console.WriteLine("Soma total: "+totalVendido);
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+
+                    case 4:
+                        Console.WriteLine("Relatório dos funcionarios ");
+                        Console.Write("Informe o código do funcionário: ");
+                        string codFunc = Console.ReadLine();
+                        double totalVendas = 0;
+                        Console.WriteLine("Relatório de Vendas por Funcionário:");
+                        for (int i = 0; i < contagemVenda; i++)
+                        {
+                            if (vendas[i, 1] == codFunc)
+                            {
+                                string codProd = vendas[i, 0];
+                                double valorVenda = 0;
+                                for (int j = 0; j < contagem; j++)
+                                {
+                                    if (cadastroProd[j, 0] == codProd)
+                                    {
+                                        valorVenda = double.Parse(cadastroProd[j, 2]) * int.Parse(vendas[i, 2]);
+                                    }
+                                }
+                                totalVendas += valorVenda;
+                                Console.WriteLine($"Código do Produto: {vendas[i, 0]}, Código do Funcionário: {vendas[i, 1]}, Valor da Venda: {valorVenda:F2}");
+                            }
+                        }
+                        double comissao = totalVendas * 0.10;
+                        Console.WriteLine($"Valor total das vendas do funcionário: {totalVendas:F2}");
+                        Console.WriteLine($"Comissão (10%): {comissao:F2}");
+                        Console.ReadKey();
+                        Console.Clear();
+                        break;
+
+                    default:
+                        Console.WriteLine("Insira um número válido");
+                        Console.Clear();
+                        break;
+                }
+            } while (escolha != 0);
+
+
+        }
+    }
+}
+
